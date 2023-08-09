@@ -66,8 +66,8 @@ RUN apt-get update -yq && apt-get install -y git \
 && make install
 
 # try to build-in libs -- but they may need to be symlinked for this to work
-COPY libnvoptix.so.1 /usr/lib/x86_64-linux-gnu/libnvoptix.so.1
-COPY libnvidia-rtcore.so.1 /usr/lib/x86_64-linux-gnu/libnnvidia-rtcore.so.1
+#COPY libnvoptix.so.1 /usr/lib/x86_64-linux-gnu/libnvoptix.so.1
+#COPY libnvidia-rtcore.so.1 /usr/lib/x86_64-linux-gnu/libnnvidia-rtcore.so.1
 
 WORKDIR /pbrt/pbrt-v4/build
 RUN cmake -DCMAKE_BUILD_TYPE=MINSIZEREL -DPBRT_OPTIX7_PATH=/pbrt/NVIDIA-OptiX-SDK-7.2.0-linux64-x86_64/ .. \

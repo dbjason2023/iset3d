@@ -81,6 +81,7 @@ switch (resourceType)
         resourceDir = fullfile(ourData,'characters');
     case 'server local'
         % should really be someplace else!
+        %resourceDir = 'WS3/remote-iset3d-v4/local';   
         resourceDir = '/iset/iset3d-v4/local'; % default
 end
 

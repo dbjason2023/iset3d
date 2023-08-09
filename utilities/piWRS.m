@@ -100,6 +100,9 @@ piWrite(thisR);
 
 [~,username] = system('whoami');
 
+fprintf("User name: %s", username);
+fprintf( ourDocker);
+
 if strncmp(username,'zhenyi',6)
     [obj,results] = piRenderZhenyi(thisR, 'ourdocker', ourDocker);
 else

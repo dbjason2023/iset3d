@@ -135,8 +135,10 @@ if ischar(renderType), renderType = {renderType}; end
 %% Set up the dockerWrapper
 
 % If the user has sent in a dockerWrapper (ourDocker) we use it
-if ~isempty(ourDocker),   renderDocker = ourDocker;
-else, renderDocker = dockerWrapper();
+if ~isempty(ourDocker),   
+    renderDocker = ourDocker;
+else, 
+    renderDocker = dockerWrapper();
 end
 
 %% Set up the rendering type.

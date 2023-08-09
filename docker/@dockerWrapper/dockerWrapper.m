@@ -182,7 +182,7 @@ classdef dockerWrapper < handle
         defaultContext;   % docker context used for everything else
         localImageName;
         localRoot  = '';  % dockerWrapper.defaultLocalRoot();
-        localRender;
+        localRender = 1; %true; %false;
         localImageTag;    % Does this over-ride a tag that is already set?
 
         localVolumePath  = '';
@@ -219,7 +219,7 @@ classdef dockerWrapper < handle
             aDocker.remoteMachine  = getpref('docker','remoteMachine',''); % for syncing the data
             aDocker.remoteUser     = getpref('docker','remoteUser',''); % use for rsync & ssh/docker
             aDocker.remoteImage    = getpref('docker','remoteImage',''); % use to specify a GPU-specific image on server
-            aDocker.remoteImageTag = 'latest';
+            aDocker.remoteImageTag = '???latest';
             if ispc
                 % On Windows can not specify ~ for a mount point, even if
                 % it is actually on a Linux server, so we guess!
@@ -238,7 +238,7 @@ classdef dockerWrapper < handle
             % Windows
             aDocker.relativeScenePath = dockerWrapper.pathToLinux(piDirGet('server local'));
 
-            aDocker.localRender = getpref('docker','localRender',false);
+            aDocker.localRender = getpref('docker','localRender', 1);
             aDocker.localImageTag = 'latest';
             aDocker.localRoot = getpref('docker','localRoot','');
 
@@ -299,7 +299,7 @@ classdef dockerWrapper < handle
             % is a 'docker' prefs and do something about that.
 
             disp('Reading prefs from "docker"');
-            obj.localRender = getpref('docker','localRender',0);
+            obj.localRender = getpref('docker','localRender', 1);
 
             obj.remoteMachine = getpref('docker','remoteMachine','');
             obj.remoteRoot    = getpref('docker','remoteRoot','');
@@ -335,7 +335,7 @@ classdef dockerWrapper < handle
 
         %% Default servers
         function useServer = vistalabDefaultServer()
-            useServer = 'muxreconrt.stanford.edu';
+            useServer = 'localhost'; %'192.168.1.3';
         end
 
         %% This is used for wsl commands under Windows, which need
@@ -527,20 +527,24 @@ classdef dockerWrapper < handle
                 end
             end
 
+            hostLocalPath = obj.localVolumePath;
+
             containerLocalPath = dockerWrapper.pathToLinux(obj.relativeScenePath);
+            fprintf("contain local path=%s", containerLocalPath);
+
 
             volumeMap = sprintf("-v %s:%s", hostLocalPath, containerLocalPath);
             placeholderCommand = 'bash';
 
             % We use the default context for local docker containers
-            if obj.localRender
-                contextFlag = ' --context default ';
+            if obj.localRender || true
+                contextFlag =''; %' --context default ';
             else
                 % Rendering remotely.
                 % Have to track user set context somehow
                 % probably static var should be set from prefs
                 % automatically...
-                if isempty(obj.staticVar('get','renderContext'))
+                if isempty(obj.staticVar('get','renderContext'))docker
                     contextFlag = [' --context ' getpref('docker','renderContext','remote-mux')];
                     obj.staticVar('set','renderContext',getpref('docker','renderContext','remote-mux'));
                 else
@@ -550,7 +554,7 @@ classdef dockerWrapper < handle
 
             if isequal(processorType, 'GPU')
                 % want: --gpus '"device=#"'
-                gpuString = sprintf(' --gpus device=%s ',num2str(obj.whichGPU));
+                gpuString = '';  %sprintf(' --gpus device=%s ',num2str(obj.whichGPU));
                 dCommand = sprintf('docker %s run -d -it %s --name %s  %s', contextFlag, gpuString, ourContainer, volumeMap);
                 cmd = sprintf('%s %s %s %s', dCommand, cudalib, useImage, placeholderCommand);
             else
@@ -816,11 +820,11 @@ classdef dockerWrapper < handle
                     if isequal(thisD.remoteMachine, thisD.vistalabDefaultServer)
                         switch thisD.whichGPU
                             case {0, -1}
-                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-ampere-mux';
+                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-pascal:v1';  %'camerasimulation/pbrt-v4-gpu-t4-okay';
                             case 1
-                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-volta-mux';
+                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-volta-mux-2';
                             case 2
-                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-volta-mux';
+                                thisD.remoteImage = 'digitalprodev/pbrt-v4-gpu-volta-mux-2';
                         end
 
                         % If the user specified a different tag for the
@@ -874,6 +878,7 @@ classdef dockerWrapper < handle
             else
                 ourContext = obj.renderContext;
             end
+
             % Get or set-up the rendering context for the docker container
             %
             % A docker context ('docker context create ...') is a set of
@@ -881,7 +886,8 @@ classdef dockerWrapper < handle
             % from our local computer.
             %
             if ~exist('serverName','var'), serverName = obj.remoteMachine; end
-
+            
+             
             switch serverName
                 case obj.vistalabDefaultServer()
                     % Check that the Docker context exists.
@@ -918,7 +924,6 @@ classdef dockerWrapper < handle
                     % context
             end
         end
-
     end
 end
 

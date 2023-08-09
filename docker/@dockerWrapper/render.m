@@ -31,7 +31,7 @@ verbose = obj.verbosity; % 0, 1, 2
 % Determine the container
 if obj.gpuRendering
     useContainer = obj.getContainer('PBRT-GPU');
-    renderCommand = strrep(renderCommand, 'pbrt ', 'pbrt --gpu ');
+    renderCommand = strrep(renderCommand, 'pbrt ', 'pbrt ');
 else
     useContainer = obj.getContainer('PBRT-CPU');
 end
@@ -50,11 +50,16 @@ if ~isempty(dockerWrapper.staticVar('get','renderContext',''))
 else
     useContext = getpref('docker','renderContext','');
 end
+
+
 % container is Linux, so convert
 outputFolder = dockerWrapper.pathToLinux(outputFolder);
 
 % sync data over
-if ~obj.localRender
+if 0 && ~obj.localRender
+
+    fprintf("Remote Render ...")
+
     % Running remotely.
     if ispc
         rSync = 'wsl rsync';
@@ -111,8 +116,8 @@ if ~obj.localRender
 
     % need to cd to our scene, and remove all old renders
     % some leftover files can start with "." so need to get them also
-    containerCommand = sprintf('docker --context %s exec %s %s sh -c "cd %s && rm -rf renderings/{*,.*}  && %s"',...
-        useContext, flags, useContainer, shortOut, renderCommand);
+    containerCommand = sprintf('docker exec %s sh -c "cd %s && rm -rf renderings/{*,.*}  && %s"',...
+        useContainer, shortOut, renderCommand);
     if verbose > 0
         fprintf('Command: %s\n', containerCommand);
     end

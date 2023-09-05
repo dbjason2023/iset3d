@@ -1,4 +1,4 @@
-function camera = piCameraCreate(cameraType,varargin)
+function camera = piCameraCreate(cameraType,varargin) %camera
 % Create a camera structure to be placed in a ISET3d recipe
 %
 % Synopsis

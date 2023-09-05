@@ -24,10 +24,10 @@ if isempty(which('lensC'))
 end
 
 %% Read the pbrt files
-thisR = piRecipeCreate('Chess Set');
+thisR = piRecipeCreate('car');  %('Chess Set');
 
 % This will run if you want.
-% piWRS(thisR);
+piWRS(thisR);
 
 %% Read in the microlens and set its size
 

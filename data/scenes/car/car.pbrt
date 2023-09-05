@@ -5,7 +5,7 @@ Camera "perspective"
     "float focaldistance" [ 2000 ]
     "float fov" [ 31.417276 ]
 Sampler "halton"
-    "integer pixelsamples" [ 16 ]
+    "integer pixelsamples" [ 64 ]
 Film "rgb"
     "integer yresolution" [ 720 ]
     "integer xresolution" [ 1280 ]
@@ -23,6 +23,6 @@ Material "coateddiffuse"
 LightSource "distant"
     "point3 to" [ 0.10185962 -0.03635437 0.99413425 ]
     "point3 from" [ 0 0 0 ]
-    "rgb L" [ 1 1 1 ]
+    "rgb L" [ 10 10 10 ]
 Include "car_materials.pbrt"
 Include "car_geometry.pbrt"

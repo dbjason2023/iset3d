@@ -14,6 +14,8 @@ function [txtLines, header] = piReadText(fname)
 % See also
 %   piRead
 
+disp(fname);
+
 fileID = fopen(fname);
 % tmp = textscan(fileID,'%s','Delimiter','\n','CommentStyle',{'#'});
 tmp = textscan(fileID,'%s','Delimiter','\n');
